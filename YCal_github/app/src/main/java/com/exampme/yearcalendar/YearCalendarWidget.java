@@ -83,23 +83,28 @@ public class YearCalendarWidget extends AppWidgetProvider {
     static boolean isOddWeek(long oddRefMs, int yr, int m, int col, int firstDow) {
         if (oddRefMs < 0) return false;
 
+        // Шаг 1: достаём ЛОКАЛЬНУЮ дату из сохранённого timestamp
+        Calendar refLocal = Calendar.getInstance();
+        refLocal.setTimeInMillis(oddRefMs);
+        int refY  = refLocal.get(Calendar.YEAR);
+        int refMo = refLocal.get(Calendar.MONTH);
+        int refD  = refLocal.get(Calendar.DAY_OF_MONTH);
+
+        // Шаг 2: вся арифметика в UTC полдень — переход на летнее/зимнее время не влияет
         java.util.TimeZone utc = java.util.TimeZone.getTimeZone("UTC");
 
         Calendar ref = Calendar.getInstance(utc);
-        ref.setTimeInMillis(oddRefMs);
-        ref.set(Calendar.HOUR_OF_DAY, 12);
-        ref.set(Calendar.MINUTE, 0);
-        ref.set(Calendar.SECOND, 0);
+        ref.set(refY, refMo, refD, 12, 0, 0);
         ref.set(Calendar.MILLISECOND, 0);
-        int refDow = (ref.get(Calendar.DAY_OF_WEEK) + 5) % 7;
-        ref.add(Calendar.DAY_OF_YEAR, -refDow);
+        int refDow = (ref.get(Calendar.DAY_OF_WEEK) + 5) % 7; // 0=Пн … 6=Вс
+        ref.add(Calendar.DAY_OF_YEAR, -refDow); // откат к понедельнику опорной недели
 
         Calendar colMon = Calendar.getInstance(utc);
         colMon.set(yr, m, 1, 12, 0, 0);
         colMon.set(Calendar.MILLISECOND, 0);
         colMon.add(Calendar.DAY_OF_YEAR, -firstDow + col * 7);
 
-        long diffMs = colMon.getTimeInMillis() - ref.getTimeInMillis();
+        long diffMs    = colMon.getTimeInMillis() - ref.getTimeInMillis();
         long diffWeeks = diffMs / (7L * 24 * 3600 * 1000);
         return ((diffWeeks % 2) + 2) % 2 == 0;
     }
