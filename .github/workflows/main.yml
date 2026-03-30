@@ -20,13 +20,14 @@ jobs:
           distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: chmod +x YCal_github/gradlew
 
       - name: Build debug APK
+        working-directory: YCal_github
         run: ./gradlew assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: YCal-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: YCal_github/app/build/outputs/apk/debug/*.apk
