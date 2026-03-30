@@ -83,15 +83,19 @@ public class YearCalendarWidget extends AppWidgetProvider {
     static boolean isOddWeek(long oddRefMs, int yr, int m, int col, int firstDow) {
         if (oddRefMs < 0) return false;
 
-        Calendar ref = Calendar.getInstance();
+        java.util.TimeZone utc = java.util.TimeZone.getTimeZone("UTC");
+
+        Calendar ref = Calendar.getInstance(utc);
         ref.setTimeInMillis(oddRefMs);
-        ref.set(Calendar.HOUR_OF_DAY, 0); ref.set(Calendar.MINUTE, 0);
-        ref.set(Calendar.SECOND, 0); ref.set(Calendar.MILLISECOND, 0);
+        ref.set(Calendar.HOUR_OF_DAY, 12);
+        ref.set(Calendar.MINUTE, 0);
+        ref.set(Calendar.SECOND, 0);
+        ref.set(Calendar.MILLISECOND, 0);
         int refDow = (ref.get(Calendar.DAY_OF_WEEK) + 5) % 7;
         ref.add(Calendar.DAY_OF_YEAR, -refDow);
 
-        Calendar colMon = Calendar.getInstance();
-        colMon.set(yr, m, 1, 0, 0, 0);
+        Calendar colMon = Calendar.getInstance(utc);
+        colMon.set(yr, m, 1, 12, 0, 0);
         colMon.set(Calendar.MILLISECOND, 0);
         colMon.add(Calendar.DAY_OF_YEAR, -firstDow + col * 7);
 
@@ -174,10 +178,6 @@ public class YearCalendarWidget extends AppWidgetProvider {
         }
     }
 
-    // ───────────────────────────────────────────
-    //  Settings Activity — inner static class
-    //  В манифесте: android:name=".YearCalendarWidget$SettingsActivity"
-    // ───────────────────────────────────────────
     public static class SettingsActivity extends Activity {
 
         @Override
