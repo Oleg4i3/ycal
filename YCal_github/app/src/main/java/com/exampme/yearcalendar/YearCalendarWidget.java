@@ -53,6 +53,16 @@ public class YearCalendarWidget extends AppWidgetProvider {
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
         for (int id : ids) update(ctx, mgr, id);
     }
+	@Override
+    public void onReceive(Context ctx, Intent intent) {
+        super.onReceive(ctx, intent);
+        if (Intent.ACTION_DATE_CHANGED.equals(intent.getAction())) {
+            AppWidgetManager mgr = AppWidgetManager.getInstance(ctx);
+            int[] ids = mgr.getAppWidgetIds(
+                    new ComponentName(ctx, YearCalendarWidget.class));
+            for (int id : ids) update(ctx, mgr, id);
+        }
+    }
 
     static void update(Context ctx, AppWidgetManager mgr, int id) {
         WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
